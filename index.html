@@ -121,21 +121,22 @@
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
         const loader = document.getElementById('loader');
-
+    
         inputImage.addEventListener('change', async (event) => {
             const file = event.target.files[0];
             const fileURL = URL.createObjectURL(file);
             originalImage.src = fileURL;
             processedImage.src = ''; // Clear processed image
+            error.innerHTML = ''; // Clear previous error message
             loader.style.display = 'block'; // Show loader
             loading.innerHTML = '圖片處理中，請稍候...';
-
+    
             try {
                 const formData = new FormData();
                 formData.append('image', file);
-
+    
                 const apiUrl = 'https://unet-apii-lxnucxjrzq-de.a.run.app/predict';
-
+    
                 fetch(apiUrl, {
                     method: 'POST',
                     body: formData
@@ -150,18 +151,17 @@
                     const processedImageURL = URL.createObjectURL(blob);
                     processedImage.src = processedImageURL;
                     loading.innerHTML = ''; // Clear loading message
-                    error.innerHTML = ''; // Clear error message
                 }).catch(err => {
                     error.innerHTML = '發生錯誤，請重試。錯誤信息: ' + err.message;
                     loading.innerHTML = ''; // Clear loading message
                 });
-
+    
             } catch (error) {
                 loader.style.display = 'none'; // Hide loader
                 error.innerHTML = '發生錯誤，請重試。錯誤信息: ' + error.message;
                 loading.innerHTML = ''; // Clear loading message
             }
         });
-    </script>
+    </script>    
 </body>
 </html>
