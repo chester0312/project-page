@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +13,6 @@
             margin: 0;
             padding: 0;
         }
-
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -23,7 +21,6 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
-
         input[type="file"] {
             display: block;
             margin: 20px auto;
@@ -36,11 +33,9 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         input[type="file"]:hover {
             background-color: #eee;
         }
-
         img {
             max-width: 100%;
             height: auto;
@@ -49,45 +44,52 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
-
         h1 {
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 30px;
         }
-
         h2 {
             text-align: center;
             font-size: 1.5rem;
             margin-top: 50px;
             margin-bottom: 20px;
         }
-
         .error-message {
             color: red;
             text-align: center;
             font-size: 1.2rem;
             margin-top: 20px;
         }
-
         .loading-message {
             text-align: center;
             font-size: 1.2rem;
             margin-top: 20px;
         }
-
         .row {
             display: flex;
             flex-wrap: wrap;
         }
-
         .col-md-6 {
             flex: 0 0 50%;
             max-width: 50%;
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loader {
+            border: 6px solid #f3f3f3; /* Light grey */
+            border-top: 6px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: auto;
+            display: none;
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h1>基於U-net的地質分類</h1>
@@ -107,10 +109,10 @@
                 <img id="processedImage" src="" class="img-fluid">
             </div>
         </div>
+        <div id="loader" class="loader"></div>
         <div id="loading" class="loading-message"></div>
         <div id="error" class="error-message"></div>
     </div>
-
 
     <script>
         const inputImage = document.getElementById('inputImage');
@@ -118,12 +120,15 @@
         const processedImage = document.getElementById('processedImage');
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
+        const loader = document.getElementById('loader');
 
         inputImage.addEventListener('change', async (event) => {
             const file = event.target.files[0];
             const fileURL = URL.createObjectURL(file);
             originalImage.src = fileURL;
             processedImage.src = ''; // Clear processed image
+            loader.style.display = 'block'; // Show loader
+            loading.innerHTML = '圖片處理中，請稍候...';
 
             try {
                 const formData = new FormData();
@@ -131,13 +136,11 @@
 
                 const apiUrl = 'https://unet-apii-lxnucxjrzq-de.a.run.app/predict';
 
-                // Show loading message
-                loading.innerHTML = '圖片處理中，請稍候...';
-
                 fetch(apiUrl, {
                     method: 'POST',
                     body: formData
                 }).then(response => {
+                    loader.style.display = 'none'; // Hide loader
                     if (response.ok) {
                         return response.blob();
                     } else {
@@ -154,11 +157,11 @@
                 });
 
             } catch (error) {
+                loader.style.display = 'none'; // Hide loader
                 error.innerHTML = '發生錯誤，請重試。錯誤信息: ' + error.message;
                 loading.innerHTML = ''; // Clear loading message
             }
         });
     </script>
 </body>
-
 </html>
